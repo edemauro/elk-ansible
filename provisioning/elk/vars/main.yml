@@ -1,0 +1,23 @@
+---
+java_package:
+  - openjdk-8-jdk
+
+nginx_user: www-data
+nginx_worker_connections: 1024
+nginx_remove_default_vhost: true
+nginx_conf_path: /etc/nginx/conf.d
+nginx_vhost_path: /etc/nginx/sites-enabled
+nginx_default_vhost_path: /etc/nginx/sites-enabled/default
+__nginx_user: "www-data"
+
+kibana_server_name: logs.dev
+kibana_username: kibana
+kibana_password: password
+
+logstash_monitor_local_syslog: false
+logstash_forwarder_files:
+  - paths:
+    - /var/log/auth.log
+    fields:
+      type: syslog
+

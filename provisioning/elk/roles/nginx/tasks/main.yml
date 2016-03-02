@@ -1,0 +1,46 @@
+---
+
+- name: Define nginx_user.
+  set_fact:
+    nginx_user: "{{ __nginx_user }}"
+  when: nginx_user is not defined
+
+- name: Ensure nginx is installed.
+  apt: name=nginx 
+       state=installed
+
+- name: Remove default nginx vhost config file
+  file: path={{ nginx_default_vhost_path }}
+        state=absent
+  when: nginx_remove_default_vhost
+  notify:
+    - reload nginx
+
+- name: Add managed vhost config file
+  template: src=vhosts.j2
+            dest={{ nginx_vhost_path }}/vhosts.conf
+            mode=0644
+  when: nginx_vhosts|length > 0
+  notify:
+    - reload nginx
+
+- name: Remove managed vhost config file
+  file: path={{ nginx_vhost_path }}/vhosts.conf
+        state=absent
+  when: nginx_vhosts|length == 0
+  notify:
+    - reload nginx
+
+- name: Copy nginx configuration in place.
+  template: src=nginx.conf.j2
+            dest=/etc/nginx/nginx.conf
+            owner=root
+            group=root
+            mode=0644
+  notify:
+    - reload nginx
+
+- name: Ensure nginx is started
+  service: name=nginx
+           state=started
+           enabled=yes

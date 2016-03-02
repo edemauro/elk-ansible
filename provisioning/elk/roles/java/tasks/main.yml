@@ -1,0 +1,9 @@
+---
+- name: Add OpenJDK repository
+  apt_repository: repo='ppa:openjdk-r/ppa'
+
+- name: Update apt cache.
+  apt: update_cache=yes cache_valid_time=86400
+
+- name: Install Java
+  apt: "name={{ java_package }} state=installed"
